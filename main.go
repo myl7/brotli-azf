@@ -17,7 +17,7 @@ func main() {
 
 	http.HandleFunc("/api/enc", enc.Handle)
 
-	listen := fmt.Sprintf("Listening on :%s", port)
+	listen := fmt.Sprintf(":%s", port)
 	err := http.ListenAndServe(listen, nil)
 	if err != nil {
 		log.Fatalln(err)
