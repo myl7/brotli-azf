@@ -10,13 +10,13 @@ import (
 func Handle(w http.ResponseWriter, req *http.Request) {
 	c, err := NewConfig()
 	if err != nil {
-		responseErr(w, 500, "App invalid config")
+		responseErr(w, 500, "app invalid config")
 		return
 	}
 
 	err = req.ParseMultipartForm(21 * 1024 * 1024)
 	if err != nil {
-		responseErr(w, 400, "Parsing multipart form failed")
+		responseErr(w, 400, "parsing multipart form failed")
 		return
 	}
 
@@ -35,7 +35,7 @@ func Handle(w http.ResponseWriter, req *http.Request) {
 	case "chunked":
 		handleChunked(w, form, c)
 	default:
-		responseErr(w, 400, "Invalid mode param")
+		responseErr(w, 400, "invalid mode param")
 	}
 }
 
@@ -46,5 +46,5 @@ func handleChunked(w http.ResponseWriter, form *multipart.Form, c Config) {}
 func responseErr(w http.ResponseWriter, status int, reason string) {
 	w.WriteHeader(status)
 	_, _ = fmt.Fprintln(w, reason)
-	log.Printf("Err: status = %d, reason = %s", status, reason)
+	log.Printf("err: status = %d, reason = %s", status, reason)
 }
