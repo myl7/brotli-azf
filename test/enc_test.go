@@ -25,6 +25,7 @@ func TestEncNoParamWork(t *testing.T) {
 	_ = mw.Close()
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest("POST", "https://example.com/enc", &body)
+	req.Header.Set("content-type", mw.FormDataContentType())
 	enc.Handle(w, req)
 	res := w.Result()
 	_, params, err := mime.ParseMediaType(res.Header.Get("content-type"))
@@ -33,40 +34,49 @@ func TestEncNoParamWork(t *testing.T) {
 		return
 	}
 
-	l, ok := params["len"]
-	if !ok {
-		t.Errorf("len not exists")
-		return
-	} else if l != "64" {
-		t.Errorf("len requres %d but gets %s", 64, l)
-		return
-	}
-
 	mr := multipart.NewReader(res.Body, params["boundary"])
 	foundFile := false
-	for p, err := mr.NextPart(); err != io.EOF; {
-		if err != nil {
+	foundLen := false
+	for {
+		p, err := mr.NextPart()
+		if err == io.EOF {
+			break
+		} else if err != nil {
 			t.Error(err)
 			return
 		}
 
-		if p.FormName() == "file" {
+		key := p.FormName()
+		switch key {
+		case "file":
 			foundFile = true
 			output, _ := ioutil.ReadAll(p)
 
 			var b2 bytes.Buffer
 			bw := brotli.NewWriter(&b2)
 			_, _ = bw.Write(input)
+			_ = bw.Close()
 
 			toOutput := b2.Bytes()
 			if bytes.Compare(output, toOutput) != 0 {
 				t.Errorf("file requires %v but get %v", toOutput, output)
 				return
 			}
+		case "len":
+			foundLen = true
+			l, _ := ioutil.ReadAll(p)
+			if string(l) != "64" {
+				t.Errorf("len requires %d but get %s", 64, l)
+				return
+			}
 		}
 	}
 	if foundFile == false {
 		t.Errorf("file not exists")
+		return
+	}
+	if foundLen == false {
+		t.Errorf("len not exists")
 		return
 	}
 }

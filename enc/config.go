@@ -8,7 +8,7 @@ import (
 )
 
 type Config struct {
-	InputMaxsize uint64
+	InputMaxsize int64
 }
 
 type ErrInvalidConfig struct {
@@ -30,7 +30,7 @@ func NewConfig() (Config, error) {
 		return Config{}, ErrInvalidConfig{Field: "BROTLI_INPUT_MAXSIZE", ErrVal: s}
 	}
 
-	c.InputMaxsize = b.Bytes()
+	c.InputMaxsize = int64(b.Bytes())
 
 	return c, err
 }
