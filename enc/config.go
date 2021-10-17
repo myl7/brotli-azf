@@ -24,6 +24,10 @@ func NewConfig() (Config, error) {
 	c := Config{}
 
 	s := os.Getenv("BROTLI_INPUT_MAXSIZE")
+	if s == "" {
+		s = "10M"
+	}
+
 	var b datasize.ByteSize
 	err := b.UnmarshalText([]byte(s))
 	if err != nil {
