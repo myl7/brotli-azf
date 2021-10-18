@@ -14,5 +14,3 @@ jobs:
       - name: Test
         run: go test -v
         working-directory: test
-      - name: Build
-        run: bash build.sh
