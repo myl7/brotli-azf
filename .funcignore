@@ -7,3 +7,4 @@ tmp
 *.go
 go.mod
 go.sum
+*.sh
