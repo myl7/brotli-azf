@@ -5,12 +5,12 @@ import (
 	"net/http"
 )
 
-func reportErr(w http.ResponseWriter, status int, reason string, err error) {
+func reportErr(w http.ResponseWriter, status int, reason string, err error, extra interface{}) {
 	http.Error(w, reason, status)
 	if err != nil {
-		log.Printf("err: status = %d; reason = %s; original err = %s", status, reason, err.Error())
+		log.Printf("err: status = %d; reason = %s; original err = %s; extra = %v", status, reason, err.Error(), extra)
 	} else {
-		log.Printf("err: status = %d; reason = %s", status, reason)
+		log.Printf("err: status = %d; reason = %s; extra = %v", status, reason, extra)
 	}
 }
 

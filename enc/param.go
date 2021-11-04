@@ -17,7 +17,7 @@ func getParams(w http.ResponseWriter, mr *multipart.Reader, c Config) (map[strin
 		if err == io.EOF {
 			break
 		} else if err != nil {
-			reportErr(w, 400, "invalid multipart form", err)
+			reportErr(w, 400, "invalid multipart form", err, nil)
 			return nil, errFailed
 		}
 
@@ -26,7 +26,7 @@ func getParams(w http.ResponseWriter, mr *multipart.Reader, c Config) (map[strin
 			var buf bytes.Buffer
 			_, err := io.CopyN(&buf, p, c.InputMaxsize)
 			if err != nil && err != io.EOF {
-				reportErr(w, 500, "reading failed", err)
+				reportErr(w, 500, "reading failed", err, nil)
 				return nil, errFailed
 			}
 
@@ -37,7 +37,7 @@ func getParams(w http.ResponseWriter, mr *multipart.Reader, c Config) (map[strin
 
 		b, err := ioutil.ReadAll(p)
 		if err != nil {
-			reportErr(w, 500, "reading failed", err)
+			reportErr(w, 500, "reading failed", err, nil)
 			return nil, errFailed
 		}
 
@@ -67,7 +67,7 @@ func getParams(w http.ResponseWriter, mr *multipart.Reader, c Config) (map[strin
 
 	_, ok := res["file"]
 	if !ok {
-		reportErr(w, 400, "no file param", nil)
+		reportErr(w, 400, "no file param", nil, nil)
 		return nil, errFailed
 	}
 	_, ok = res["mode"]
