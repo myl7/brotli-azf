@@ -26,18 +26,10 @@ func Handle(w http.ResponseWriter, req *http.Request) {
 	}
 
 	w.Header().Set("content-type", "application/octet-stream")
-
-	switch params["mode"].(string) {
-	case "stream":
-		processStream(w, params, c)
-	case "chunked":
-		processChunked(w, params, c)
-	default:
-		reportErr(w, 400, "unknown mode", nil, nil)
-	}
+	Process(w, params, c)
 }
 
-func processStream(w http.ResponseWriter, params map[string]interface{}, _ Config) {
+func Process(w http.ResponseWriter, params map[string]interface{}, _ Config) {
 	enc := brotli.NewWriterOptions(w, brotli.WriterOptions{
 		Quality: params["quality"].(int),
 		LGWin:   params["lgwin"].(int),
@@ -57,5 +49,3 @@ func processStream(w http.ResponseWriter, params map[string]interface{}, _ Confi
 
 	reportOk(l)
 }
-
-func processChunked(w http.ResponseWriter, params map[string]interface{}, _ Config) {}
