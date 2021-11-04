@@ -1,8 +1,8 @@
 package main
 
 import (
-	"brotli-azf/enc"
 	"fmt"
+	"github.com/myl7/brotli-azf/enc"
 	"log"
 	"net/http"
 	"os"

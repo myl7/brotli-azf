@@ -1,4 +1,4 @@
-module brotli-azf
+module github.com/myl7/brotli-azf
 
 go 1.17
 

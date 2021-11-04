@@ -1,9 +1,9 @@
 package test
 
 import (
-	"brotli-azf/enc"
 	"bytes"
 	"github.com/andybalholm/brotli"
+	"github.com/myl7/brotli-azf/enc"
 	"io/ioutil"
 	"math/rand"
 	"net/http/httptest"
