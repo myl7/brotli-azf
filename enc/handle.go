@@ -1,11 +1,9 @@
 package enc
 
 import (
-	"bytes"
-	"errors"
-	"fmt"
+	"bufio"
 	"github.com/andybalholm/brotli"
-	"mime/multipart"
+	"io"
 	"net/http"
 )
 
@@ -27,59 +25,24 @@ func Handle(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	switch params["mode"].(string) {
-	case "once":
-		handleOnce(w, params, c)
-	// case "chunked":
-	// 	handleChunked(w, params, c)
-	default:
-		reportErr(w, 400, "invalid mode param", nil, nil)
-	}
+	w.Header().Set("content-type", "application/octet-stream")
+	Process(w, params, c)
 }
 
-func handleOnce(w http.ResponseWriter, params map[string]interface{}, _ Config) {
-	res := multipart.NewWriter(w)
-	defer func(res *multipart.Writer) {
-		err := res.Close()
-		if err != nil {
-			reportErr(w, 500, "writing failed", err, nil)
-		}
-	}(res)
-	w.Header().Set("content-type", res.FormDataContentType())
-
-	encw, err := res.CreateFormFile("file", "bin")
-	if err != nil {
-		reportErr(w, 500, "creating form failed", err, nil)
-		return
-	}
-
-	enc := brotli.NewWriter(encw)
-	_, err = bytes.NewReader(params["file"].([]byte)).WriteTo(enc)
+func Process(w http.ResponseWriter, params map[string]interface{}, _ Config) {
+	enc := brotli.NewWriter(w)
+	file := bufio.NewReader(params["file"].(io.Reader))
+	l, err := file.WriteTo(enc)
 	if err != nil {
 		reportErr(w, 400, "brotli decoding failed", err, nil)
 		return
 	}
+
 	err = enc.Close()
 	if err != nil {
 		reportErr(w, 400, "brotli decoding failed", err, nil)
 		return
 	}
 
-	lenw, err := res.CreateFormField("len")
-	if err != nil {
-		reportErr(w, 500, "creating form failed", err, nil)
-		return
-	}
-
-	_, err = lenw.Write([]byte(fmt.Sprintf("%d", params["len"])))
-	if err != nil {
-		reportErr(w, 500, "writing failed", err, nil)
-		return
-	}
-
-	reportOnceOk(params["len"].(int))
+	reportOk(l)
 }
-
-func handleChunked(w http.ResponseWriter, params map[string]interface{}, c Config) {}
-
-var errFailed = errors.New("failed")

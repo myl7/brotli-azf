@@ -14,6 +14,6 @@ func reportErr(w http.ResponseWriter, status int, reason string, err error, extr
 	}
 }
 
-func reportOnceOk(inputLen int) {
+func reportOk(inputLen int64) {
 	log.Printf("ok: input len = %d", inputLen)
 }
