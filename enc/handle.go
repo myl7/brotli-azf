@@ -38,7 +38,10 @@ func Handle(w http.ResponseWriter, req *http.Request) {
 }
 
 func processStream(w http.ResponseWriter, params map[string]interface{}, _ Config) {
-	enc := brotli.NewWriter(w)
+	enc := brotli.NewWriterOptions(w, brotli.WriterOptions{
+		Quality: params["quality"].(int),
+		LGWin:   params["lgwin"].(int),
+	})
 	file := bufio.NewReader(params["file"].(io.Reader))
 	l, err := file.WriteTo(enc)
 	if err != nil {
