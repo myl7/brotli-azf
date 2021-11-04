@@ -22,8 +22,8 @@ func Handle(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	params, err := getParams(w, mr, c)
-	if err != nil {
+	params, ok := ParseParams(w, mr, c)
+	if !ok {
 		return
 	}
 
