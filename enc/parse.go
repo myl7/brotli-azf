@@ -34,6 +34,8 @@ func ParseParams(w http.ResponseWriter, mr *multipart.Reader, c Config) (map[str
 		val := string(b)
 
 		switch key {
+		case "mode":
+			res[key] = val
 		case "quality":
 			d, err := checkRangedIntParam(key, val, 0, 11)
 			if err != nil {
@@ -59,7 +61,7 @@ func ParseParams(w http.ResponseWriter, mr *multipart.Reader, c Config) (map[str
 
 	_, ok = res["mode"]
 	if !ok {
-		res["mode"] = "once"
+		res["mode"] = "stream"
 	}
 
 	_, ok = res["quality"]

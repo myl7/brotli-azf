@@ -26,10 +26,18 @@ func Handle(w http.ResponseWriter, req *http.Request) {
 	}
 
 	w.Header().Set("content-type", "application/octet-stream")
-	Process(w, params, c)
+
+	switch params["mode"].(string) {
+	case "stream":
+		processStream(w, params, c)
+	case "chunked":
+		processChunked(w, params, c)
+	default:
+		reportErr(w, 400, "unknown mode", nil, nil)
+	}
 }
 
-func Process(w http.ResponseWriter, params map[string]interface{}, _ Config) {
+func processStream(w http.ResponseWriter, params map[string]interface{}, _ Config) {
 	enc := brotli.NewWriter(w)
 	file := bufio.NewReader(params["file"].(io.Reader))
 	l, err := file.WriteTo(enc)
@@ -46,3 +54,5 @@ func Process(w http.ResponseWriter, params map[string]interface{}, _ Config) {
 
 	reportOk(l)
 }
+
+func processChunked(w http.ResponseWriter, params map[string]interface{}, _ Config) {}
