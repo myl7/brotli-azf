@@ -45,6 +45,20 @@ use the config `Daily Usage Quota`:
 
 ![Azure Functions Daily Usage Quota](docs/images/azf-daily-usage-quota.png)
 
+## Deploy
+
+```bash
+# Clone the repo and get into the project root folder
+# Build
+bash build.sh
+# Publish with `func` commandline tool
+func azure functionapp publish <your-azf-app-name>
+# Test it works
+# Create a file `a` with random content
+curl -X POST <your-azf-app-url> -F file=@a -o b
+# Check if `b` is the encoding result of `a`
+```
+
 ## License
 
 MIT
